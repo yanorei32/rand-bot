@@ -21,8 +21,14 @@ impl EventHandler for Handler {
         }
 
         if msg.content.starts_with("!rand") {
-            let command = msg.content.trim_end().split(' ').skip(1);
-            let argc = command.clone().count();
+            let text = msg.content.replace("\n", " ");
+
+            let cmd = text
+                .split(' ')
+                .skip(1)
+                .filter(|s| !s.is_empty());
+
+            let argc = cmd.clone().count();
 
             if argc == 0 {
                 if let Err(why) = msg.channel_id.say(&ctx.http, "Invalid argument count (0).").await {
@@ -32,7 +38,10 @@ impl EventHandler for Handler {
                 return
             }
 
-            let resp = command.choose(&mut rand::thread_rng()).unwrap().replace("@", "[at]");
+            let resp = cmd
+                .choose(&mut rand::thread_rng())
+                .unwrap()
+                .replace("@", "[at]");
 
             if let Err(why) = msg.channel_id.say(&ctx.http, format!("[rand-bot] {}", resp)).await {
                 println!("Error sending message: {:?}", why);
