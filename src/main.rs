@@ -1,5 +1,5 @@
-use std::env;
 use rand::seq::IteratorRandom;
+use std::env;
 
 use serenity::{
     async_trait,
@@ -17,37 +17,29 @@ impl EventHandler for Handler {
                 println!("Error sending message: {:?}", why);
             }
 
-            return
+            return;
         }
 
         if msg.content.starts_with("!rand") {
-            let text = msg.content.replace("\n", " ");
-
-            let cmd = text
+            let resp = msg
+                .content
+                .replace("\n", " ")
                 .split(' ')
                 .skip(1)
-                .filter(|s| !s.is_empty());
-
-            let argc = cmd.clone().count();
-
-            if argc == 0 {
-                if let Err(why) = msg.channel_id.say(&ctx.http, "Invalid argument count (0).").await {
-                    println!("Error sending message: {:?}", why);
-                }
-
-                return
-            }
-
-            let resp = cmd
+                .filter(|s| !s.is_empty())
                 .choose(&mut rand::thread_rng())
-                .unwrap()
+                .unwrap_or("Invalid argument")
                 .replace("@", "[at]");
 
-            if let Err(why) = msg.channel_id.say(&ctx.http, format!("[rand-bot] {}", resp)).await {
+            if let Err(why) = msg
+                .channel_id
+                .say(&ctx.http, format!("[rand-bot] {}", resp))
+                .await
+            {
                 println!("Error sending message: {:?}", why);
             }
 
-            return
+            return;
         }
     }
 
@@ -58,8 +50,7 @@ impl EventHandler for Handler {
 
 #[tokio::main]
 async fn main() {
-    let token = env::var("DISCORD_TOKEN")
-        .expect("Expected a token in the environment");
+    let token = env::var("DISCORD_TOKEN").expect("Expected a token in the environment");
 
     let mut client = Client::builder(&token)
         .event_handler(Handler)
