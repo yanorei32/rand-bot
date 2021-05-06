@@ -20,6 +20,7 @@ impl EventHandler for Handler {
             return;
         }
 
+        // TODO: '!rand012345 word1 word2' will accepted by this function
         if msg.content.starts_with("!rand") {
             let resp = msg
                 .content
