@@ -24,10 +24,8 @@ impl EventHandler for Handler {
         if msg.content.starts_with("!rand") {
             let resp = msg
                 .content
-                .replace("\n", " ")
-                .split(' ')
+                .split_ascii_whitespace()
                 .skip(1)
-                .filter(|s| !s.is_empty())
                 .choose(&mut rand::thread_rng())
                 .unwrap_or("Invalid argument")
                 .replace("@", "[at]");
