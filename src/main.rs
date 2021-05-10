@@ -50,8 +50,13 @@ impl EventHandler for Handler {
                 .content
                 .split_once(' ')
                 .map_or("Unexpected input".to_string(), |s| {
-                    let mut c = s.1.chars().collect::<Vec<char>>();
+                    let mut c =
+                        s.1.chars()
+                            .filter(|c| !c.is_ascii_whitespace())
+                            .collect::<Vec<char>>();
+
                     c.shuffle(&mut rand::thread_rng());
+
                     return String::from_iter(c);
                 });
 
