@@ -63,7 +63,8 @@ impl EventHandler for Handler {
                         c_iter.shuffle(&mut r);
                         String::from_iter(c_iter)
                     }
-                });
+                })
+                .replace("@", "[at]");
 
             if let Err(why) = msg
                 .channel_id
