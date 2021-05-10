@@ -44,20 +44,25 @@ impl EventHandler for Handler {
             return;
         }
 
-        // TODO: '!shufc012345 word1 word2' will accepted by this function
+        // TODO: '!shufc012345 word1' will accepted by this function
         if msg.content.starts_with("!shufc") {
             let resp = msg
                 .content
                 .split_once(' ')
                 .map_or("Unexpected input".to_string(), |s| {
-                    let mut c =
+                    let mut c_iter =
                         s.1.chars()
-                            .filter(|c| !c.is_ascii_whitespace())
+                            .filter(|c| !c.is_whitespace())
                             .collect::<Vec<char>>();
 
-                    c.shuffle(&mut rand::thread_rng());
+                    let mut r = rand::thread_rng();
 
-                    return String::from_iter(c);
+                    if msg.content.starts_with("!shufcd") {
+                        String::from_iter(c_iter.iter().map(|_| *c_iter.choose(&mut r).unwrap()))
+                    } else {
+                        c_iter.shuffle(&mut r);
+                        String::from_iter(c_iter)
+                    }
                 });
 
             if let Err(why) = msg
