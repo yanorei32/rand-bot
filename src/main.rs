@@ -1,5 +1,8 @@
+//use itertools::{itertools, Itertools};
 use rand::seq::IteratorRandom;
+use rand::seq::SliceRandom;
 use std::env;
+use std::iter::FromIterator;
 
 use serenity::{
     async_trait,
@@ -29,6 +32,28 @@ impl EventHandler for Handler {
                 .choose(&mut rand::thread_rng())
                 .unwrap_or("Invalid argument")
                 .replace("@", "[at]");
+
+            if let Err(why) = msg
+                .channel_id
+                .say(&ctx.http, format!("[rand-bot] {}", resp))
+                .await
+            {
+                println!("Error sending message: {:?}", why);
+            }
+
+            return;
+        }
+
+        // TODO: '!shufc012345 word1 word2' will accepted by this function
+        if msg.content.starts_with("!shufc") {
+            let resp = msg
+                .content
+                .split_once(' ')
+                .map_or("Unexpected input".to_string(), |s| {
+                    let mut c = s.1.chars().collect::<Vec<char>>();
+                    c.shuffle(&mut rand::thread_rng());
+                    return String::from_iter(c);
+                });
 
             if let Err(why) = msg
                 .channel_id
