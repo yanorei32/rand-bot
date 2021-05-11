@@ -76,6 +76,35 @@ impl EventHandler for Handler {
 
             return;
         }
+
+        if msg.content.starts_with("!shuf") {
+            let resp = msg
+                .content
+                .split_once(' ')
+                .map_or("Unexpected input".to_string(), |s| {
+                    let mut s_iter = s.1.split_ascii_whitespace().collect::<Vec<&str>>();
+
+                    s_iter.shuffle(&mut rand::thread_rng());
+
+                    s_iter
+                        .iter()
+                        .enumerate()
+                        .map(|(i, s)| format!("{}: {}", i + 1, s))
+                        .collect::<Vec<String>>()
+                        .join("\n")
+                })
+                .replace("@", "[at]");
+
+            if let Err(why) = msg
+                .channel_id
+                .say(&ctx.http, format!("[rand-bot]\n{}", resp))
+                .await
+            {
+                println!("Error sending message: {:?}", why);
+            }
+
+            return;
+        }
     }
 
     async fn ready(&self, _: Context, ready: Ready) {
